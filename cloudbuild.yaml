@@ -1,0 +1,45 @@
+steps:
+  # 1. Construction de l'image (optimisée avec deux tags en un seul build)
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:${_VERSION}",
+        "-t",
+        "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:latest",
+        "-f",
+        "Dockerfile",
+        ".",
+      ]
+
+  # 2. Push des images vers Artifact Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:${_VERSION}",
+      ]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:latest",
+      ]
+
+substitutions:
+  _VERSION: v1.0.0
+  _REPOSITORY: test-docker # Ton nom de dépôt Artifact Registry
+  _LOCATION: europe-west1 # Ta région (ex: europe-west1, europe-west9)
+  _IMAGE_NAME: test-docker-image # Le nom de ton image
+
+images:
+  - "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:${_VERSION}"
+  - "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:latest"
+
+tags:
+  - "cloudbuild"
+  - "nextjs"
+
+timeout: 1200s
