@@ -28,6 +28,9 @@ steps:
         "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:latest",
       ]
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 substitutions:
   _VERSION: v1.0.0
   _REPOSITORY: test-docker # Ton nom de dépôt Artifact Registry
